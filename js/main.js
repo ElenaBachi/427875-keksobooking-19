@@ -27,16 +27,12 @@ var MAX_COORDINATE_Y = 630;
 
 var mapWidth = document.querySelector('.map').style.width;
 
-var locationX = getRandomNumber(0, mapWidth);
-var locationY = getRandomNumber(MIN_COORDINATE_Y, MAX_COORDINATE_Y);
 var OFFSET_X = 70;
 var OFFSET_Y = 70;
 
 var MAX_ARRAY_LENGTH = 8;
 
-var adverts = [];
-
-// Генерирует случайное число между min и max включительно для нахождения locationX, locationY
+// Генерирует случайное число между min и max включительно
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -54,55 +50,61 @@ var getArrayRandomLength = function (array) {
   return newArrayRandomLength;
 };
 
-// Создает один объект - описание объявления
-var advertDescription = {
-  author: {
-    avatar: 'img/avatars/user0' + getRandomNumber(1, 8) + '.png'
-  },
+var locationX = getRandomNumber(0, mapWidth - OFFSET_X / 2);
+var locationY = getRandomNumber(MIN_COORDINATE_Y, MAX_COORDINATE_Y);
 
-  offer: {
-    title: 'строка, заголовок предложения',
-    address: 'location.x' + ',' + ' location.y',
-    price: getRandomNumber(MIN_PRICE_PER_NIGHT, MAX_PRICE_PER_NIGHT),
-    type: getRandomArrayElement(houseType),
-    rooms: getRandomNumber(MIN_ROOM_QUANTITY, MAX_ROOM_QUANTITY),
-    guests: getRandomNumber(MIN_GUEST_QUANTITY, MAX_GUEST_QUANTITY),
-    checkin: getRandomArrayElement(checkinTime),
-    checkout: getRandomArrayElement(checkoutTime),
-    features: getArrayRandomLength(facilities),
-    description: 'строка с описанием',
-    photos: getArrayRandomLength(photos)
-  },
+// Функция генерации случайных данных (создание 1 объявления)
+var createAdvert = function () {
+  var ad = {
+    author: {
+      avatar: 'img/avatars/user0' + getRandomNumber(1, 8) + '.png'
+    },
 
-  location: {
-    x: locationX,
-    y: locationY
-  }
+    offer: {
+      title: 'строка, заголовок предложения',
+      address: 'location.x' + ',' + ' location.y',
+      price: getRandomNumber(MIN_PRICE_PER_NIGHT, MAX_PRICE_PER_NIGHT),
+      type: getRandomArrayElement(houseType),
+      rooms: getRandomNumber(MIN_ROOM_QUANTITY, MAX_ROOM_QUANTITY),
+      guests: getRandomNumber(MIN_GUEST_QUANTITY, MAX_GUEST_QUANTITY),
+      checkin: getRandomArrayElement(checkinTime),
+      checkout: getRandomArrayElement(checkoutTime),
+      features: getArrayRandomLength(facilities),
+      description: 'строка с описанием',
+      photos: getArrayRandomLength(photos)
+    },
+
+    location: {
+      x: locationX,
+      y: locationY
+    }
+  };
+  return ad;
 };
 
-// Создает массив из 8 объектов
-var findAdverts = function () {
-  for (var i = 0; i < MAX_ARRAY_LENGTH; i++) {
-    adverts += adverts.push(advertDescription);
-  }
-  return adverts;
-};
+// Vассив из 8 объектов
+var advertArray = [];
+for (var i = 0; i < MAX_ARRAY_LENGTH; i++) {
+  advertArray.push(createAdvert(i));
+}
 
-var map = document.querySelectorAll('.map');
-map.classList.remove('map--faded');
+document.querySelectorAll('.map').classList.remove('map--faded');
 
-var similarListElement = document.querySelector('.map_pins');// Элемент для вставки похожих меток
-var similarPinTemplate = document.querySelector('#pin')
+// Находит элемент, в который вставляются метки
+var pinInsertArea = document.querySelector('.map_pin');
+// Шаблог метки
+var pinTemplate = document.querySelector('#pin')
   .content
-  .querySelector('.map__overlay'); // Шаблон метки
+  .querySelector('.map__overlay');
 
-// Функция для внесения изменений в i-ую метку
-var renderPins = function () {
-  var pinElement = similarPinTemplate.cloneNode(true);
-  pinElement.style.left = locationX + OFFSET_X;
-  pinElement.style.top = locationY + OFFSET_Y;
-  pinElement.querySelectorAll('img').src = adverts[i].author.avatar;
-  pinElement.querySelectorAll('img').alt = adverts[i].offer.title;
+// Функция создает 1 метку на основе шаблона
+var renderPin = function (adArrElement) {
+  var pinElement = pinTemplate.cloneNode(true);
+
+  pinElement.style.left = adArrElement.locationX + OFFSET_X / 2;
+  pinElement.style.top = adArrElement.locationY + OFFSET_Y;
+  pinElement.querySelectorAll('img').src = adArrElement.author.avatar;
+  pinElement.querySelectorAll('img').alt = adArrElement.offer.title;
 
   return pinElement;
 };
@@ -110,8 +112,8 @@ var renderPins = function () {
 // Фрагмент для записи метки - объявления
 var fragment = document.createDocumentFragment();
 // На каждой итерации цикла складываем метку во фрагмент
-for (var i = 0; i < 8; i++) {
-  fragment.appendChild(renderPins(adverts[i]));
+for (var j = 0; j < advertArray.length; j++) {
+  fragment.appendChild(renderPin(advertArray[i]));
 }
 // Отрисовывает все метки на странице
-similarListElement.appendChild(fragment);
+pinInsertArea.appendChild(fragment);
