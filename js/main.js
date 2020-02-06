@@ -27,7 +27,7 @@ var MAX_COORDINATE_Y = 630;
 
 var mapWidth = document.querySelector('.map').style.width;
 
-var OFFSET_X = 70;
+var OFFSET_X = 50;
 var OFFSET_Y = 70;
 
 var MAX_ARRAY_LENGTH = 8;
@@ -50,14 +50,16 @@ var getArrayRandomLength = function (array) {
   return newArrayRandomLength;
 };
 
-var locationX = getRandomNumber(0, mapWidth - OFFSET_X / 2);
-var locationY = getRandomNumber(MIN_COORDINATE_Y, MAX_COORDINATE_Y);
-
 // Функция генерации случайных данных (создание 1 объявления)
-var createAdvert = function () {
-  var ad = {
+var createAdvert = function (i) {
+  var location = {
+    x: getRandomNumber(0, (mapWidth - OFFSET_X / 2)),
+    y: getRandomNumber(MIN_COORDINATE_Y, MAX_COORDINATE_Y - OFFSET_Y)
+  };
+
+  return {
     author: {
-      avatar: 'img/avatars/user0' + getRandomNumber(1, 8) + '.png'
+      avatar: 'img/avatars/user0' + parseInt(i + 1, 10) + '.png'
     },
 
     offer: {
@@ -74,46 +76,51 @@ var createAdvert = function () {
       photos: getArrayRandomLength(photos)
     },
 
-    location: {
-      x: locationX,
-      y: locationY
-    }
+    location: location
   };
-  return ad;
 };
 
-// Vассив из 8 объектов
+// Массив из 8 объектов
 var advertArray = [];
-for (var i = 0; i < MAX_ARRAY_LENGTH; i++) {
-  advertArray.push(createAdvert(i));
-}
+var createAdvertArray = function (array) {
+  for (var i = 0; i < MAX_ARRAY_LENGTH; i++) {
+    var advert = createAdvert(i);
+    array.push(advert);
+  }
+};
+createAdvertArray(advertArray);
 
-document.querySelectorAll('.map').classList.remove('map--faded');
+
+document.querySelector('.map').classList.remove('map--faded');
 
 // Находит элемент, в который вставляются метки
-var pinInsertArea = document.querySelector('.map_pin');
+var pinInsertArea = document.querySelector('.map_pins');
 // Шаблог метки
 var pinTemplate = document.querySelector('#pin')
   .content
-  .querySelector('.map__overlay');
+  .querySelector('.map__pin');
 
 // Функция создает 1 метку на основе шаблона
-var renderPin = function (adArrElement) {
+var renderPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
 
-  pinElement.style.left = adArrElement.locationX + OFFSET_X / 2;
-  pinElement.style.top = adArrElement.locationY + OFFSET_Y;
-  pinElement.querySelectorAll('img').src = adArrElement.author.avatar;
-  pinElement.querySelectorAll('img').alt = adArrElement.offer.title;
+  pinElement.style.left = pin.location.x + OFFSET_X / 2;
+  pinElement.style.top = pin.location.y + OFFSET_Y;
+  pinElement.querySelectorAll('img').src = pin.avatar;
+  pinElement.querySelectorAll('img').alt = pin.title;
 
   return pinElement;
 };
 
-// Фрагмент для записи метки - объявления
-var fragment = document.createDocumentFragment();
-// На каждой итерации цикла складываем метку во фрагмент
-for (var j = 0; j < advertArray.length; j++) {
-  fragment.appendChild(renderPin(advertArray[i]));
-}
-// Отрисовывает все метки на странице
-pinInsertArea.appendChild(fragment);
+var drawPins = function () {
+  var fragment = document.createDocumentFragment(); // Фрагмент для записи метки - объявления
+
+  // На каждой итерации цикла складываем метку во фрагмент
+  for (var a = 0; a < advertArray.length; a++) {
+    var pin = renderPin(advertArray[a]);
+    fragment.appendChild(pin);
+  }
+  pinInsertArea.appendChild(fragment);
+};
+
+drawPins();
