@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Елена Бачи](https://up.htmlacademy.ru/javascript/19/user/427875).
-* Наставник: [Александр Малинов](https://htmlacademy.ru/profile/id40204).
+* Наставник: [Евгений Суглобов](https://htmlacademy.ru/profile/id1133747).
 
 ---
 
