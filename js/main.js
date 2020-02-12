@@ -23,10 +23,10 @@ var options = {
   MAX_ARRAY_LENGTH: 8
 };
 
-var houseType = ['palace', 'flat', 'house', 'bungalo'];
+var houseTypes = ['palace', 'flat', 'house', 'bungalo'];
 
-var checkinTime = ['12:00', '13:00', '14:00'];
-var checkoutTime = ['12:00', '13:00', '14:00'];
+var checkinTimes = ['12:00', '13:00', '14:00'];
+var checkoutTimes = ['12:00', '13:00', '14:00'];
 
 var facilities = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
@@ -65,7 +65,7 @@ var createAdvert = function (i) {
   var numOrder = parseInt(i + 1, 10);
   if (numOrder < 10) {
     avatarImgAddress = 'img/avatars/user0' + numOrder + '.png';
-  } else if (numOrder >= 10 && numOrder < 100) {
+  } else {
     avatarImgAddress = 'img/avatars/user' + numOrder + '.png';
   }
 
@@ -78,11 +78,11 @@ var createAdvert = function (i) {
       title: 'строка, заголовок предложения',
       address: location.x + ', ' + location.y,
       price: getRandomNumber(options.MIN_PRICE_PER_NIGHT, options.MAX_PRICE_PER_NIGHT),
-      type: getRandomArrayElement(houseType),
+      type: getRandomArrayElement(houseTypes),
       rooms: getRandomNumber(options.MIN_ROOM_QUANTITY, options.MAX_ROOM_QUANTITY),
       guests: getRandomNumber(options.MIN_GUEST_QUANTITY, options.MAX_GUEST_QUANTITY),
-      checkin: getRandomArrayElement(checkinTime),
-      checkout: getRandomArrayElement(checkoutTime),
+      checkin: getRandomArrayElement(checkinTimes),
+      checkout: getRandomArrayElement(checkoutTimes),
       features: getArrayRandomLength(facilities),
       description: 'строка с описанием',
       photos: getArrayRandomLength(photos)
@@ -93,7 +93,6 @@ var createAdvert = function (i) {
 };
 
 // Массив из 8 объектов
-
 var createAdvertArray = function () {
   var advertArray = [];
   for (var i = 0; i < options.MAX_ARRAY_LENGTH; i++) {
@@ -138,3 +137,104 @@ for (var a = 0; a < advertArray.length; a++) {
   }));
 }
 pinInsertArea.appendChild(fragment);
+
+/* ------------------ module3-task3 ------------------ */
+
+// Функция проверяет значение объекта размещения, заменяя его на значения на рус. яз.
+var translateHouseType = function (accomodationType) {
+  switch (accomodationType) {
+    case 'palace':
+      return 'Дворец';
+    case 'flat':
+      return 'Квартира';
+    case 'house':
+      return 'Дом';
+    case 'bungalo':
+      return 'Бунгало';
+    default:
+      throw new Error('Пожалуйста, выберите доступный вариант размещения');
+  }
+};
+
+// Функция добавления предоставляемых удобств
+var showFeatures = function (arrayElement) {
+  var popupFeatures = document.querySelector('popupFeatures');
+  var popupFeature = popupFeatures.querySelector('li');
+
+  for (var b = 0; b < arrayElement.offer.features.length; b++) {
+    if (arrayElement.offer.features.includes(arrayElement.offer.features[b])) {
+      popupFeature.textContent = arrayElement.offer.features[b];
+      popupFeature.className = 'popup__feature (popup__feature-- + arrayElement.offer.features[b])';
+    } else {
+      popupFeature.style.display = 'none';
+    }
+  }
+};
+
+var featuresList = showFeatures(advertArray[0]);
+
+// Шаблон фото в объявлении
+var advertImgTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.popup__photo');
+
+// Функция вносит изменяния в src изображения
+var renderAdvertImg = function (arrayElement, index) {
+  var advertImgElement = advertImgTemplate.cloneNode(true);
+
+  advertImgElement.src = arrayElement.offer.photos[index];
+
+  return advertImgElement;
+};
+
+// Функция создания галереи изображений
+var createAdvertGallery = function (arrayElement) {
+  var imgFragment = document.createDocumentFragment();
+
+  var imgGallery = document.querySelector('.popup__photos');
+
+  for (var c = 0; c < arrayElement.offer.photos.length; c++) {
+    imgFragment.appendChild(renderAdvertImg(advertArray[0], c));
+
+    imgGallery.appendChild(imgFragment);
+  }
+  return imgGallery;
+};
+
+var advertImgGallery = createAdvertGallery(advertArray[0]);
+
+// Шаблон карточки объявления
+var advertCardTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.popup');
+
+// Функция создания карточки объявления на основе шаблона
+var renderAdvertCard = function (arrayElement) {
+  var cardElement = advertCardTemplate.cloneNode(true);
+
+  cardElement.querySelector('.popup__title').textContent = arrayElement.offer.title;
+  cardElement.querySelector('.popup__text--price').textContent = toString(arrayElement.offer.price) + '₽/ночь';
+  cardElement.querySelector('.popup__type').textContent = translateHouseType(arrayElement.offer.type);
+  cardElement.querySelector('.popup__text--capacity').textContent = toString(arrayElement.offer.rooms) + ' комнаты для ' + toString(arrayElement.offer.guests) + 'гостей';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + toString(arrayElement.offer.checkin) + ', выезд до' + toString(arrayElement.offer.checkout);
+
+  // ???
+  cardElement.querySelector('.popup__features').textContent = featuresList;
+
+  cardElement.querySelector('.popup__description').textContent = arrayElement.offer.description;
+
+  // ???
+  cardElement.querySelector('.popup__photos').img = advertImgGallery;
+
+  cardElement.querySelectorAll('.popup__avatar').src = arrayElement.author.avatar;
+
+  return cardElement;
+};
+
+var cardFragment = document.createDocumentFragment();
+
+cardFragment.appendChild(renderAdvertCard(advertArray[0]));
+
+var mapFiltersContainer = document.querySelector('.map__filters-container');
+
+mapFiltersContainer.insertAdjacentHTML('beforebegin', cardFragment);
