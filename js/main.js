@@ -23,10 +23,10 @@ var options = {
   MAX_ARRAY_LENGTH: 8
 };
 
-var houseType = ['palace', 'flat', 'house', 'bungalo'];
+var houseTypes = ['palace', 'flat', 'house', 'bungalo'];
 
-var checkinTime = ['12:00', '13:00', '14:00'];
-var checkoutTime = ['12:00', '13:00', '14:00'];
+var checkinTimes = ['12:00', '13:00', '14:00'];
+var checkoutTimes = ['12:00', '13:00', '14:00'];
 
 var facilities = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
@@ -65,7 +65,7 @@ var createAdvert = function (i) {
   var numOrder = parseInt(i + 1, 10);
   if (numOrder < 10) {
     avatarImgAddress = 'img/avatars/user0' + numOrder + '.png';
-  } else if (numOrder >= 10 && numOrder < 100) {
+  } else {
     avatarImgAddress = 'img/avatars/user' + numOrder + '.png';
   }
 
@@ -78,11 +78,11 @@ var createAdvert = function (i) {
       title: 'строка, заголовок предложения',
       address: location.x + ', ' + location.y,
       price: getRandomNumber(options.MIN_PRICE_PER_NIGHT, options.MAX_PRICE_PER_NIGHT),
-      type: getRandomArrayElement(houseType),
+      type: getRandomArrayElement(houseTypes),
       rooms: getRandomNumber(options.MIN_ROOM_QUANTITY, options.MAX_ROOM_QUANTITY),
       guests: getRandomNumber(options.MIN_GUEST_QUANTITY, options.MAX_GUEST_QUANTITY),
-      checkin: getRandomArrayElement(checkinTime),
-      checkout: getRandomArrayElement(checkoutTime),
+      checkin: getRandomArrayElement(checkinTimes),
+      checkout: getRandomArrayElement(checkoutTimes),
       features: getArrayRandomLength(facilities),
       description: 'строка с описанием',
       photos: getArrayRandomLength(photos)
@@ -93,7 +93,6 @@ var createAdvert = function (i) {
 };
 
 // Массив из 8 объектов
-
 var createAdvertArray = function () {
   var advertArray = [];
   for (var i = 0; i < options.MAX_ARRAY_LENGTH; i++) {
@@ -138,3 +137,97 @@ for (var a = 0; a < advertArray.length; a++) {
   }));
 }
 pinInsertArea.appendChild(fragment);
+
+/* ------------------ module3-task3 ------------------ */
+
+// Шаблон карточки объявления
+var advertCardTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.popup');
+
+// Функция создания карточки объявления на основе шаблона
+var renderAdvertCard = function (arrayElement) {
+  var cardElement = advertCardTemplate.cloneNode(true);
+
+  var firstAdvert = advertArray[0];
+
+  // Функция проверяет значение объекта размещения, заменяя его на значения на рус. яз.
+  var translateHouseType = function (type) {
+    var accomodation = {
+      bungalo: 'бунгало',
+      palace: 'Дворец',
+      flat: 'Квартира',
+      house: 'Дом',
+    };
+
+    return accomodation[type];
+  };
+
+  // Функция добавления предоставляемых удобств
+  var showFeatures = function () {
+    var popupFeatures = advertCardTemplate.querySelector('.popup__features');
+    var feature = {
+      wifi: popupFeatures.querySelector('.popup__feature--wifi'),
+      dishwasher: popupFeatures.querySelector('.popup__feature--dishwasher'),
+      parking: popupFeatures.querySelector('.popup__feature--parking'),
+      washer: popupFeatures.querySelector('.popup__feature--washer'),
+      elevator: popupFeatures.querySelector('.popup__feature--elevator'),
+      conditioner: popupFeatures.querySelector('.popup__feature--conditioner'),
+    };
+
+    for (var b = 0; b < firstAdvert.offer.features.length; b++) {
+      if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'wifi') {
+        feature.wifi.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'dishwasher') {
+        feature.dishwasher.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'parking') {
+        feature.parking.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'washer') {
+        feature.washer.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'elevator') {
+        feature.elevator.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) && firstAdvert.offer.features[b] === 'conditioner') {
+        feature.conditioner.innerHTML = firstAdvert.offer.features[b];
+      } else if (firstAdvert.offer.features.includes(firstAdvert.offer.features[b]) === false) {
+        feature.firstAdvert.offer.features[b].style.display = 'none';
+      }
+    }
+  };
+
+  // Функция создания галереи изображений
+  var createAdvertGallery = function () {
+    var imgGallery = advertCardTemplate.querySelector('.popup__photos');
+    var imgTemplate = imgGallery.querySelector('img');
+    var advertImg = imgTemplate.cloneNode(true);
+
+    for (var c = 0; c < firstAdvert.offer.photos.length; c++) {
+      advertImg.src = firstAdvert.offer.photos[c];
+      imgGallery.appendChild(advertImg);
+    }
+  };
+
+  cardElement.querySelector('.popup__title').textContent = arrayElement.offer.title;
+  cardElement.querySelector('.popup__text--price').textContent = toString(arrayElement.offer.price) + '₽/ночь';
+  cardElement.querySelector('.popup__type').textContent = translateHouseType(arrayElement.offer.type);
+  cardElement.querySelector('.popup__text--capacity').textContent = toString(arrayElement.offer.rooms) + ' комнаты для ' + toString(arrayElement.offer.guests) + 'гостей';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + toString(arrayElement.offer.checkin) + ', выезд до' + toString(arrayElement.offer.checkout);
+
+
+  cardElement.querySelector('.popup__features').innerHTML = showFeatures();
+
+  cardElement.querySelector('.popup__description').textContent = arrayElement.offer.description;
+
+  cardElement.querySelector('.popup__photos').innerHTML = createAdvertGallery();
+
+  cardElement.querySelectorAll('.popup__avatar').src = arrayElement.author.avatar;
+
+  return cardElement;
+};
+
+var cardFragment = document.createDocumentFragment();
+
+cardFragment.appendChild(renderAdvertCard(advertArray[0]));
+
+var mapFiltersContainer = document.querySelector('.map__filters-container');
+
+mapFiltersContainer.insertAdjacentHTML('beforebegin', cardFragment);
