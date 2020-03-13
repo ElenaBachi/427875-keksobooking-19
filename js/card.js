@@ -94,8 +94,7 @@
       cardElement.querySelector(POPUP_CLASS.CAPACITY).textContent = toString(adsItem.offer.rooms) + ' комнаты для ' + toString(adsItem.offer.guests) + 'гостей';
       cardElement.querySelector(POPUP_CLASS.TIME).textContent = 'Заезд после ' + toString(adsItem.offer.checkin) + ', выезд до' + toString(adsItem.offer.checkout);
 
-      deleteItemFromList(popupFeatures, 'li');
-      addItemToList('li', adsItem.offer.features, popupFeatures);
+      deleteItemFromList(popupFeatures, 'li'); addItemToList('li', adsItem.offer.features, popupFeatures);
 
       cardElement.querySelector(POPUP_CLASS.DESCRIPTION).textContent = adsItem.offer.description;
 

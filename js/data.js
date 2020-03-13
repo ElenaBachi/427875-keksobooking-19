@@ -90,6 +90,7 @@
       INACTIVE_PIN_HEIGTH: 65,
       ACTIVE_PIN_WIDTH: 50,
       ACTIVE_PIN_HEIGTH: 70,
-    }
+    },
+    map: document.querySelector('.map')
   };
 })();
