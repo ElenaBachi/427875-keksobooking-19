@@ -40,33 +40,37 @@
 
   deactivateMap();
 
-  window.map = {
-    activate: function () {
-      map.classList.remove('map--faded');
-      advertForm.classList.remove('ad-form--disabled');
+  var activateMap = function () {
+    map.classList.remove('map--faded');
+    advertForm.classList.remove('ad-form--disabled');
 
-      advertFormInputs.forEach(function (item) {
-        item.removeAttribute('disabled', 'disabled');
-      });
+    advertFormInputs.forEach(function (item) {
+      item.removeAttribute('disabled', 'disabled');
+    });
 
-      advertFormSelects.forEach(function (item) {
-        item.removeAttribute('disabled', 'disabled');
-      });
+    advertFormSelects.forEach(function (item) {
+      item.removeAttribute('disabled', 'disabled');
+    });
 
-      advertFormButtons.forEach(function (item) {
-        item.removeAttribute('disabled', 'disabled');
-      });
+    advertFormButtons.forEach(function (item) {
+      item.removeAttribute('disabled', 'disabled');
+    });
 
-      advertFormTextarea.removeAttribute('disabled', 'disabled');
+    advertFormTextarea.removeAttribute('disabled', 'disabled');
 
-      addressInput.value = Math.floor(MarkerCoordinate.ACTIVE_PIN_LEFT) + ', ' + Math.floor(MarkerCoordinate.ACTIVE_PIN_TOP);
-    },
+    addressInput.value = Math.floor(MarkerCoordinate.ACTIVE_PIN_LEFT) + ', ' + Math.floor(MarkerCoordinate.ACTIVE_PIN_TOP);
   };
 
-  var pinHadnle = map.querySelector('.map__pin--main');
+  var activatePage = function () {
+    activateMap();
+    window.pin.addPins();
+  };
 
-  pinHadnle.addEventListener('mousedown', function (evt) {
+  var activatePageButton = document.querySelector('.map__pin--main');
+
+  activatePageButton.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+    activatePage();
 
     var startCoords = {
       x: evt.clientX,
@@ -86,10 +90,10 @@
         y: moveEvt.clientY
       };
 
-      pinHadnle.style.top = (pinHadnle.offsetTop - shift.y) + 'px';
-      pinHadnle.style.left = (pinHadnle.offsetLeft - shift.x) + 'px';
+      activatePageButton.style.top = (activatePageButton.offsetTop - shift.y) + 'px';
+      activatePageButton.style.left = (activatePageButton.offsetLeft - shift.x) + 'px';
 
-      addressInput.value = (parseInt(pinHadnle.style.top, 10) + window.data.MarkerSize.ACTIVE_PIN_HEIGTH) + ', ' + (parseInt(pinHadnle.style.left, 10) + window.data.MarkerSize.ACTIVE_PIN_WIDTH / 2);
+      addressInput.value = (parseInt(activatePageButton.style.top, 10) + window.data.MarkerSize.ACTIVE_PIN_HEIGTH) + ', ' + (parseInt(activatePageButton.style.left, 10) + window.data.MarkerSize.ACTIVE_PIN_WIDTH / 2);
     };
 
     var onMouseUp = function (upEvt) {

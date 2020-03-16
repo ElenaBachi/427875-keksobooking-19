@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var activatePageButton = document.querySelector('.map__pin--main');
   var pinInsertArea = document.querySelector('.map__pins');
 
   var OFFSET_X = window.data.MarkerSize.ACTIVE_PIN_WIDTH / 2;
@@ -31,69 +30,58 @@
     return pinFragment;
   };
 
-  var openAdvertCard = function () {
-    var advertCardTemplate = document.querySelector('#card')
-      .content
-      .querySelector('.popup');
+  window.pin = {
+    addPins: function () {
+      pinInsertArea.appendChild(createPinList());
 
-    var createAdvertCard = function (item) {
-      var cardFragment = document.createDocumentFragment();
+      var createAdvertCard = function (item) {
+        var advertCardTemplate = document.querySelector('#card')
+          .content
+          .querySelector('.popup');
 
-      var mapFiltersContainer = document.querySelector('.map__filters-container');
-      var cardElement = window.card.renderAdvert(item, advertCardTemplate);
-      cardFragment.appendChild(cardElement);
+        var cardFragment = document.createDocumentFragment();
 
-      window.data.map.insertBefore(cardFragment, mapFiltersContainer);
+        var mapFiltersContainer = document.querySelector('.map__filters-container');
+        var cardElement = window.card.renderAdvert(item, advertCardTemplate);
+        cardFragment.appendChild(cardElement);
 
-      var cards = window.data.map.querySelectorAll('article');
+        window.data.map.insertBefore(cardFragment, mapFiltersContainer);
 
-      cards.forEach(function (it) {
-        it.querySelector('.popup__close').addEventListener('click', function () {
-          it.remove();
-        });
+        var cards = window.data.map.querySelectorAll('article');
 
-        it.addEventListener('keydown', function (evt) {
-          if (evt.key === window.util.ESC_KEY) {
+        cards.forEach(function (it) {
+          it.querySelector('.popup__close').addEventListener('click', function () {
             it.remove();
-          }
-        });
-      });
-    };
+          });
 
-    var openPopup = function () {
+          it.addEventListener('keydown', function (evt) {
+            if (evt.key === window.util.ESC_KEY) {
+              it.remove();
+            }
+          });
+        });
+      };
+
+      var openPopup = function (data) {
+        var article = document.querySelector('article');
+        if (article) {
+          article.remove();
+        }
+        createAdvertCard(data);
+      };
+
       var pins = pinInsertArea.querySelectorAll('.map__pin:not(.map__pin--main)');
 
       pins.forEach(function (it, i) {
         it.addEventListener('click', function () {
-          var article = document.querySelector('article');
-          if (article) {
-            article.remove();
+          openPopup(window.data.advertArray[i]);
+        });
+        it.addEventListener('keydown', function (evt) {
+          if (evt.key === window.util.ENTER_KEY) {
+            openPopup(window.data.advertArray[i]);
           }
-          createAdvertCard(window.data.advertArray[i]);
         });
       });
-    };
-
-    // Обработчик события mousedown
-    activatePageButton.addEventListener('mousedown', function (evt) {
-      if (evt.button !== 0) {
-        return;
-      } else {
-        window.map.activate();
-        pinInsertArea.appendChild(createPinList());
-        openPopup();
-      }
-    });
-
-    // Обработчик события keydown для взаимодействия с клавиатуры
-    activatePageButton.addEventListener('keydown', function (evt) {
-      if (evt.key === window.util.ENTER_KEY) {
-        window.map.activate();
-        pinInsertArea.appendChild(createPinList());
-        openPopup();
-      }
-    });
+    },
   };
-
-  openAdvertCard();
 })();
