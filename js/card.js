@@ -21,68 +21,68 @@
     house: 'Дом',
   };
 
+  var deleteItemFromList = function (list, item) {
+    var collection = list.querySelectorAll(item);
+
+    collection.forEach(function (it, y) {
+      list.removeChild(collection[y]);
+    });
+  };
+
+  var addItemToList = function (selector, array, parent) {
+    var item = document.createElement(selector);
+    for (var p = 0; p < array.length; p++) {
+      item.textContent = array[p];
+      item.className = 'popup__feature popup__feature--' + array[p];
+      parent.appendChild(item);
+    }
+  };
+
+  var deleteElement = function (element, selector) {
+    var elementDelete = element.querySelector(selector);
+
+    elementDelete.classList.add('visually-hidden');
+  };
+
+  var createAdvertGallery = function (element, array, parentSelector, childSelector) {
+    var imgGallery = element.querySelector(parentSelector);
+    var imgTemplate = imgGallery.querySelector(childSelector);
+
+    for (var c = 0; c < array.length; c++) {
+      var advertImg = imgTemplate.cloneNode(true);
+      advertImg.src = array[c];
+      advertImg.classList.remove('visually-hidden');
+      imgGallery.appendChild(advertImg);
+    }
+  };
+
+  // Удаляет текстовые поля, если нет значений
+  var removeUndefinedTextContent = function (popup) {
+    var textContentItem = {
+      TITLE: popup.querySelector('.popup__title'),
+      PRICE: popup.querySelector('.popup__text--price'),
+      TYPE: popup.querySelector('.popup__type'),
+      CAPACITY: popup.querySelector('.popup__text--capacity'),
+      TIME: popup.querySelector('.popup__text--time'),
+      DESCRIPTION: popup.querySelector('.popup__description')
+    };
+
+    var textContentList = Object.values(textContentItem);
+
+    textContentList.forEach(function (item, j) {
+      if (textContentList[j].textContent === undefined) {
+        item[j].classList.add('visually-hidden');
+      }
+    });
+
+    return popup;
+  };
+
   window.card = {
     renderAdvert: function (adsItem, cardTemplate) {
       var cardElement = cardTemplate.cloneNode(true);
 
       var popupFeatures = cardElement.querySelector('.popup__features');
-
-      var deleteItemFromList = function (list, item) {
-        var collection = list.querySelectorAll(item);
-
-        collection.forEach(function (it, y) {
-          list.removeChild(collection[y]);
-        });
-      };
-
-      var addItemToList = function (selector, array, parent) {
-        var item = document.createElement(selector);
-        for (var p = 0; p < array.length; p++) {
-          item.textContent = array[p];
-          item.className = 'popup__feature popup__feature--' + array[p];
-          parent.appendChild(item);
-        }
-      };
-
-      var deleteElement = function (selector) {
-        var element = cardElement.querySelector(selector);
-
-        element.classList.add('visually-hidden');
-      };
-
-      var createAdvertGallery = function (array, parentSelector, childSelector) {
-        var imgGallery = cardElement.querySelector(parentSelector);
-        var imgTemplate = imgGallery.querySelector(childSelector);
-
-        for (var c = 0; c < array.length; c++) {
-          var advertImg = imgTemplate.cloneNode(true);
-          advertImg.src = array[c];
-          advertImg.classList.remove('visually-hidden');
-          imgGallery.appendChild(advertImg);
-        }
-      };
-
-      // Удаляет текстовые поля, если нет значений
-      var removeUndefinedTextContent = function (popup) {
-        var textContentItem = {
-          TITLE: cardElement.querySelector('.popup__title'),
-          PRICE: cardElement.querySelector('.popup__text--price'),
-          TYPE: cardElement.querySelector('.popup__type'),
-          CAPACITY: cardElement.querySelector('.popup__text--capacity'),
-          TIME: cardElement.querySelector('.popup__text--time'),
-          DESCRIPTION: cardElement.querySelector('.popup__description')
-        };
-
-        var textContentList = Object.values(textContentItem);
-
-        textContentList.forEach(function (item, j) {
-          if (textContentList[j].textContent === undefined) {
-            item[j].classList.add('visually-hidden');
-          }
-        });
-
-        return popup;
-      };
 
       cardElement.querySelector(POPUP_CLASS.TITLE).textContent = adsItem.offer.title;
       cardElement.querySelector(POPUP_CLASS.PRICE).textContent = toString(adsItem.offer.price) + '₽/ночь';
@@ -94,8 +94,8 @@
 
       cardElement.querySelector(POPUP_CLASS.DESCRIPTION).textContent = adsItem.offer.description;
 
-      deleteElement(POPUP_CLASS.PHOTO);
-      createAdvertGallery(adsItem.offer.photos, POPUP_CLASS.PHOTOS, POPUP_CLASS.PHOTO);
+      deleteElement(cardElement, POPUP_CLASS.PHOTO);
+      createAdvertGallery(cardElement, adsItem.offer.photos, POPUP_CLASS.PHOTOS, POPUP_CLASS.PHOTO);
 
       cardElement.querySelector(POPUP_CLASS.AVATAR).src = adsItem.author.avatar;
 

@@ -8,12 +8,10 @@
   var mapHeight = mapComputedStyle.height;
 
   var advertForm = document.querySelector('.ad-form');
-
   var advertFormInputs = advertForm.querySelectorAll('input');
   var advertFormSelects = advertForm.querySelectorAll('select');
   var advertFormTextarea = advertForm.querySelector('textarea');
   var advertFormButtons = advertForm.querySelectorAll('button');
-
   var addressInput = advertForm.querySelector('#address');
 
   var MarkerCoordinate = {
@@ -61,16 +59,29 @@
     addressInput.value = Math.floor(MarkerCoordinate.ACTIVE_PIN_LEFT) + ', ' + Math.floor(MarkerCoordinate.ACTIVE_PIN_TOP);
   };
 
+  var successHandler = function (cards) {
+    window.pin.paint(cards);
+  };
+
+  var errorHandler = function () {
+    //
+  };
+
   var activatePage = function () {
     activateMap();
-    window.pin.addPins();
+    window.pin.delete();
+    // window.pin.paint();
+    window.backend.load(successHandler, errorHandler);
   };
 
   var activatePageButton = document.querySelector('.map__pin--main');
 
+  activatePageButton.addEventListener('click', function () {
+    activatePage();
+  });
+
   activatePageButton.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-    activatePage();
 
     var startCoords = {
       x: evt.clientX,
